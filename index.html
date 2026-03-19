@@ -3,36 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>محمودAi</title>
+    <title>My Google AI Studio App</title>
     <script>
-      window.process = window.process || { env: {} };
-      window.onerror = function(message, source, lineno, colno, error) {
-        var errorDiv = document.createElement('div');
-        errorDiv.style.color = 'red';
-        errorDiv.style.padding = '20px';
-        errorDiv.style.fontFamily = 'sans-serif';
-        errorDiv.innerHTML = '<h3>Application Error</h3>' +
-          '<p><strong>Message:</strong> ' + message + '</p>' +
-          '<p><strong>Source:</strong> ' + source + ':' + lineno + ':' + colno + '</p>' +
-          '<pre>' + (error && error.stack ? error.stack : '') + '</pre>';
-        document.body.appendChild(errorDiv);
-      };
+      window.process = { env: {} };
+    </script>
+    <script>
+      window.addEventListener('error', function(event) {
+        var msg = 'Global Error: ' + (event.error ? event.error.stack : event.message);
+        console.error(msg);
+        if (document.body) {
+          document.body.innerHTML += '<div style="color:red; padding:20px; background:#222; z-index:9999; position:absolute; top:0; left:0; right:0;"><h3>Global Error:</h3><pre>' + msg + '</pre></div>';
+        } else {
+          window.onload = function() {
+            document.body.innerHTML += '<div style="color:red; padding:20px; background:#222; z-index:9999; position:absolute; top:0; left:0; right:0;"><h3>Global Error:</h3><pre>' + msg + '</pre></div>';
+          };
+        }
+      });
       window.addEventListener('unhandledrejection', function(event) {
-        var errorDiv = document.createElement('div');
-        errorDiv.style.color = 'red';
-        errorDiv.style.padding = '20px';
-        errorDiv.style.fontFamily = 'sans-serif';
-        errorDiv.innerHTML = '<h3>Unhandled Promise Rejection</h3>' +
-          '<p><strong>Reason:</strong> ' + (event.reason && event.reason.message ? event.reason.message : event.reason) + '</p>' +
-          '<pre>' + (event.reason && event.reason.stack ? event.reason.stack : '') + '</pre>';
-        document.body.appendChild(errorDiv);
+        var msg = 'Unhandled Promise Rejection: ' + (event.reason ? event.reason.stack : event.reason);
+        console.error(msg);
+        if (document.body) {
+          document.body.innerHTML += '<div style="color:red; padding:20px; background:#222; z-index:9999; position:absolute; top:0; left:0; right:0;"><h3>Unhandled Promise Rejection:</h3><pre>' + msg + '</pre></div>';
+        } else {
+          window.onload = function() {
+            document.body.innerHTML += '<div style="color:red; padding:20px; background:#222; z-index:9999; position:absolute; top:0; left:0; right:0;"><h3>Unhandled Promise Rejection:</h3><pre>' + msg + '</pre></div>';
+          };
+        }
       });
     </script>
   </head>
   <body>
     <div id="root"></div>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
