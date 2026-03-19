@@ -1,0 +1,90 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required)
+    //   - displayName: string (optional)
+    //   - photoURL: string (optional)
+    //
+    // Collection: chats
+    // Fields:
+    //   - userId: string (required, immutable)
+    //   - title: string (required, max 100 chars)
+    //   - createdAt: timestamp (required, immutable)
+    //   - updatedAt: timestamp (required)
+    //
+    // Collection: chats/{chatId}/messages
+    // Fields:
+    //   - role: string (required, ['user', 'bot'])
+    //   - text: string (required, max 5000 chars)
+    //   - image: string (optional, URL)
+    //   - isImageGen: bool (optional)
+    //   - timestamp: timestamp (required, immutable)
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' || 
+         (request.auth.token.email == "mahmoudahmad01094@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email']) &&
+             data.uid == request.auth.uid &&
+             data.email is string && data.email.size() < 100;
+    }
+
+    function isValidChat(data) {
+      return data.keys().hasAll(['userId', 'title', 'createdAt', 'updatedAt']) &&
+             data.userId == request.auth.uid &&
+             data.title is string && data.title.size() <= 100;
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasAll(['role', 'text', 'timestamp']) &&
+             data.role in ['user', 'bot'] &&
+             data.text is string && data.text.size() <= 10000;
+    }
+
+    // Rules
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isOwner(userId) && isValidUser(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /chats/{chatId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && isValidChat(request.resource.data);
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid && 
+                     request.resource.data.userId == resource.data.userId &&
+                     isValidChat(request.resource.data);
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+
+      match /messages/{messageId} {
+        // Use get() to check parent chat ownership
+        allow read: if isAuthenticated() && get(/databases/$(database)/documents/chats/$(chatId)).data.userId == request.auth.uid;
+        allow create: if isAuthenticated() && 
+                       get(/databases/$(database)/documents/chats/$(chatId)).data.userId == request.auth.uid &&
+                       isValidMessage(request.resource.data);
+        allow update, delete: if isAdmin();
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:css='false' b:defaultwidgetversion='2' b:layoutsversion='3' b:responsive='true' expr:dir='data:blog.languageDirection' expr:lang='data:blog.locale' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+  <head>
+    <meta content='width=device-width, initial-scale=1' name='viewport'/>
+    <title><data:blog.pageTitle/></title>
+    <b:skin><![CDATA[
+      /* Reset and Base Styles */
+      body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden; /* يمنع ظهور شريطي تمرير */
+        background-color: #ffffff;
+      }
+      
+      /* تنسيق نافذة التطبيق (Iframe) لتأخذ الشاشة بالكامل */
+      .app-iframe {
+        width: 100%;
+        height: 100vh;
+        border: none;
+        display: block;
+      }
+      
+      /* إخفاء شريط بلوجر العلوي */
+      #navbar-iframe {
+        display: none !important;
+      }
+    ]]></b:skin>
+    <b:template-skin>
+      <![CDATA[]]>
+    </b:template-skin>
+  </head>
+  <body>
+    <!-- تضمين تطبيق الذكاء الاصطناعي الخاص بك -->
+    <!-- ملاحظة: تم استخدام الرابط الخاص بالتطوير بناءً على طلبك -->
+    <iframe class='app-iframe' src='https://ais-dev-2vcgxqcgnxla45pqajam3w-290800842920.europe-west2.run.app' allow='microphone; camera; clipboard-write; geolocation' allowfullscreen='true'></iframe>
+    
+    <!-- قسم مخفي مطلوب من بلوجر لقبول القالب بدون أخطاء -->
+    <div style='display:none;'>
+      <b:section class='main' id='main' showaddelement='no'>
+        <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog'>
+          <b:includable id='main'/>
+        </b:widget>
+      </b:section>
+    </div>
+  </body>
+</html>
